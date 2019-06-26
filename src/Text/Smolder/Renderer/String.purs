@@ -19,7 +19,7 @@ import Data.String (length)
 import Data.Tuple (Tuple(..))
 import Data.Tuple.Nested ((/\))
 import Global.Unsafe (unsafeEncodeURI)
-import Text.Smolder.Markup (Attr(..), Markup, MarkupM(..))
+import Text.Smolder.Markup (Attr(..), AttrValue(..), Markup, MarkupM(..))
 
 escapeMap :: Map Char String
 escapeMap = fromFoldable
@@ -125,7 +125,13 @@ escapeAttrValue tag key value
 
 showAttrs :: String -> CatList Attr → String
 showAttrs tag = map showAttr >>> fold
-  where showAttr (Attr key value) = " "
+  where
+    showAttr (Attr key (Safe value)) = " "
+          <> key
+          <> "=\""
+          <> value
+          <> "\""
+    showAttr (Attr key (Unsafe value)) = " "
           <> key
           <> "=\""
           <> escapeAttrValue tag key value
